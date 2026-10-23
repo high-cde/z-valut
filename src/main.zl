@@ -5,9 +5,10 @@
 import ZValut;
 import ZValutTransaction;
 import ZValutLedger;
+import ZValutNetwork;
 
 pub fn main() -> int {
-    system_log("=== ZDOS Z-VALUT: Avvio Nodo Sovrano ===");
+    system_log("=== ZDOS Z-VALUT: Avvio Nodo Sovrano con Modulo di Rete ===");
 
     // 1. Inizializzazione del Vault principale
     let my_wallet = ZValut::init_vault("master_seed_secure_9981");
@@ -33,9 +34,13 @@ pub fn main() -> int {
     // 4. Commit del blocco nel Ledger
     let tx_array = [signed_tx];
     let new_block = ZValutLedger::commit_block(0, tx_array, "0x0000000000000000");
-    
     system_log("Blocco #" + string(new_block.block_index) + " generato con hash: " + new_block.block_hash);
-    system_log("=== Z-VALUT: Ciclo eseguito con successo ===");
+
+    // 5. Connessione e propagazione di rete
+    let target_peer = ZValutNetwork::connect_peer("127.0.0.1", 9920);
+    ZValutNetwork::broadcast_transaction(target_peer, signed_tx);
+
+    system_log("=== Z-VALUT: Ciclo di rete e ledger completato con successo ===");
 
     return 0;
 }

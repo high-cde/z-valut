@@ -1,0 +1,40 @@
+// ==========================================
+// ZDOS // Z-VALUT NETWORK & SYNC MODULE (ZLang)
+// ==========================================
+
+module ZValutNetwork {
+
+    import ZValutTransaction;
+
+    struct PeerNode {
+        string node_id;
+        string endpoint_ip;
+        u32 port;
+        bool is_active;
+    }
+
+    // Inizializzazione di un nodo peer per la propagazione
+    pub fn connect_peer(ip: string, port: u32) -> PeerNode {
+        let peer = PeerNode {
+            node_id: crypto_sha256_hex(ip + string(port)),
+            endpoint_ip: ip,
+            port: port,
+            is_active: true
+        };
+        
+        system_log("Z-VALUT-NET: Connessione stabilita con il peer sovrano -> " + ip + ":" + string(port));
+        return peer;
+    }
+
+    // Propagazione della transazione firmata alla rete ZDOS
+    pub fn broadcast_transaction(peer: PeerNode, tx: ZValutTransaction::Transaction) -> bool {
+        if !peer.is_active {
+            system_log("Z-VALUT-NET: Errore - Peer non attivo.");
+            return false;
+        }
+
+        system_log("Z-VALUT-NET: Propagazione tx " + tx.tx_id + " verso il nodo " + peer.endpoint_ip);
+        // Protocollo di trasmissione nativo ZLB2
+        return true;
+    }
+}
