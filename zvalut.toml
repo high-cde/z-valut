@@ -1,0 +1,11 @@
+[package]
+name = "z-valut"
+version = "1.0.0"
+author = "HighKali <highkali13@proton.me>"
+ecosystem = "ZDOS-Sovereign"
+language = "ZLang"
+runtime = "ZLB2"
+
+[dependencies]
+zlang-core = ">=1.0.0"
+zlb2-runtime = ">=2.1.0"
