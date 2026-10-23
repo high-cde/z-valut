@@ -1,0 +1,41 @@
+// ==========================================
+// ZDOS // Z-VALUT MAIN ENTRY POINT (ZLang)
+// ==========================================
+
+import ZValut;
+import ZValutTransaction;
+import ZValutLedger;
+
+pub fn main() -> int {
+    system_log("=== ZDOS Z-VALUT: Avvio Nodo Sovrano ===");
+
+    // 1. Inizializzazione del Vault principale
+    let my_wallet = ZValut::init_vault("master_seed_secure_9981");
+    system_log("Vault inizializzato per indirizzo: " + my_wallet.address);
+
+    // 2. Creazione di una transazione di test
+    let tx = ZValutTransaction::Transaction {
+        tx_id: "TX_GENESIS_001",
+        sender: my_wallet.address,
+        recipient: "ZVT_RECIPIENT_SECURE_88B",
+        amount_zvt: 2500, // 25.00 ZVT
+        amount_dsn: 100,
+        signature: ""
+    };
+
+    // 3. Firma della transazione
+    let signed_tx = ZValutTransaction::sign_transaction(tx, "private_key_mock_sig");
+    
+    if ZValutTransaction::verify_transaction(signed_tx) {
+        system_log("Transazione verificata correttamente.");
+    }
+
+    // 4. Commit del blocco nel Ledger
+    let tx_array = [signed_tx];
+    let new_block = ZValutLedger::commit_block(0, tx_array, "0x0000000000000000");
+    
+    system_log("Blocco #" + string(new_block.block_index) + " generato con hash: " + new_block.block_hash);
+    system_log("=== Z-VALUT: Ciclo eseguito con successo ===");
+
+    return 0;
+}
