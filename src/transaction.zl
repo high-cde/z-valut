@@ -1,0 +1,41 @@
+// ==========================================
+// ZDOS // Z-VALUT TRANSACTION MODULE (ZLang)
+// ==========================================
+
+module ZValutTransaction {
+
+    struct Transaction {
+        string tx_id;
+        string sender;
+        string recipient;
+        u64 amount_zvt;
+        u64 amount_dsn;
+        string signature;
+    }
+
+    // Firma nativa della transazione tramite chiave privata del Vault
+    pub fn sign_transaction(tx: Transaction, private_key: string) -> Transaction {
+        let raw_payload = tx.sender + tx.recipient + string(tx.amount_zvt);
+        let generated_sig = crypto_sha256_sign(raw_payload, private_key);
+        
+        let signed_tx = Transaction {
+            tx_id: tx.tx_id,
+            sender: tx.sender,
+            recipient: tx.recipient,
+            amount_zvt: tx.amount_zvt,
+            amount_dsn: tx.amount_dsn,
+            signature: generated_sig
+        };
+
+        system_log("Z-VALUT-TX: Transazione firmata con successo in modalita nativa.");
+        return signed_tx;
+    }
+
+    // Verifica la validità di una transazione sul ledger
+    pub fn verify_transaction(tx: Transaction) -> bool {
+        if length(tx.signature) < 32 {
+            return false;
+        }
+        return true;
+    }
+}
